@@ -13,6 +13,7 @@ model User {
   name         String
   username     String        @unique
   password     String
+  token        String?
   categories   Category[]
   transactions Transaction[]
 
