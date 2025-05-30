@@ -169,3 +169,96 @@ describe("GET /api/users/current", () => {
 		expect(body.errors).toBeDefined();
 	});
 });
+
+describe("PATCH /api/users/current", () => {
+	beforeEach(async () => {
+		await UserTest.create();
+	});
+
+	afterEach(async () => {
+		await UserTest.delete();
+	});
+
+	it("should reject update user if request is invalid", async () => {
+		const response = await app.request("/api/users/current", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				username: "",
+				password: "",
+				name: "",
+			}),
+		});
+
+		const body = await response.json();
+
+		expect(response.status).toBe(400);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should reject update user if request header is invalid", async () => {
+		const response = await app.request("/api/users/current", {
+			method: "PATCH",
+			headers: {
+				Authorization: "salah",
+			},
+			body: JSON.stringify({
+				password: "passbaru",
+			}),
+		});
+
+		const body = await response.json();
+
+		expect(response.status).toBe(401);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should able update name", async () => {
+		const response = await app.request("/api/users/current", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "testi",
+			}),
+		});
+
+		const body = await response.json();
+
+		expect(response.status).toBe(200);
+		expect(body.data).toBeDefined();
+		expect(body.data.name).toBe("testi");
+	});
+
+	it("should able update password", async () => {
+		let response = await app.request("/api/users/current", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				password: "baru",
+			}),
+		});
+
+		expect(response.status).toBe(200);
+
+		const body = await response.json();
+
+		expect(body.data).toBeDefined();
+		expect(body.data.name).toBe("test");
+
+		response = await app.request("/api/users/login", {
+			method: "POST",
+			body: JSON.stringify({
+				username: "test",
+				password: "baru",
+			}),
+		});
+
+		expect(response.status).toBe(200);
+	});
+});
