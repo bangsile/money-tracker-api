@@ -13,4 +13,7 @@ export class UserValidation {
         username: z.string().min(1),
         password: z.string().min(1)
     })
+
+    static readonly TOKEN: ZodType = z.string().min(1)
+
 }
