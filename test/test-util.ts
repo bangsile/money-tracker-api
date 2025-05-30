@@ -25,3 +25,13 @@ export class UserTest {
     }
 
 }
+
+export class CategoryTest {
+    static async delete() {
+        await prisma.category.deleteMany({
+            where: {
+                username: "test"
+            }
+        })
+    }
+}
