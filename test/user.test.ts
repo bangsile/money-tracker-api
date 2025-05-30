@@ -262,3 +262,39 @@ describe("PATCH /api/users/current", () => {
 		expect(response.status).toBe(200);
 	});
 });
+
+describe("DELETE /api/users/logout", () => {
+	beforeEach(async () => {
+		await UserTest.create();
+	});
+
+	afterEach(async () => {
+		await UserTest.delete();
+	});
+
+	it("should reject if token invalid", async () => {
+		const response = await app.request("/api/users/current", {
+			method: "DELETE",
+			headers: {
+				"Authorization": "salah"
+			}
+		})
+
+		expect(response.status).toBe(401)
+        const body = await response.json()
+        expect(body.errors).toBeDefined()
+	})
+	it("should success logout", async () => {
+		const response = await app.request("/api/users/current", {
+			method: "DELETE",
+			headers: {
+				"Authorization": "test"
+			}
+		})
+
+		expect(response.status).toBe(200)
+        const body = await response.json()
+		logger.debug(body)
+        expect(body.data).toBe(true)
+	})
+})

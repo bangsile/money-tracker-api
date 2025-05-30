@@ -11,7 +11,7 @@ import { authMiddleware } from "../middleware/auth-middleware";
 import { ApplicationVariables } from "../model/app-model";
 import { date } from "zod";
 
-export const userController = new Hono<{Variables: ApplicationVariables}>();
+export const userController = new Hono<{ Variables: ApplicationVariables }>();
 
 userController.post("/api/users", async (c) => {
 	const request = (await c.req.json()) as RegisterUserRequest;
@@ -46,11 +46,21 @@ userController.get("/api/users/current", async (c) => {
 userController.patch("/api/users/current", async (c) => {
 	const user = c.get("user") as User;
 
-	const request = await c.req.json() as UpdateUserRequest;
+	const request = (await c.req.json()) as UpdateUserRequest;
 
-	const response = await UserService.update(user, request)
+	const response = await UserService.update(user, request);
 
 	return c.json({
-		data: response
-	})
+		data: response,
+	});
+});
+
+userController.delete('/api/users/current', async (c) => {
+    const user = c.get('user') as User
+
+    const response = await UserService.logout(user)
+
+    return c.json({
+        data: response
+    })
 })
