@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import { prisma } from "../application/database";
 import { User } from "../generated/prisma";
 import { CategoryResponse, CreateCategoryRequest, toCategoryResponse } from "../model/category-model";
@@ -15,6 +16,24 @@ export class CategoryService {
                 username: user.username
             }
         })
+
+        return toCategoryResponse(category)
+    }
+
+    static async get(categoryId: string): Promise<CategoryResponse> {
+        categoryId = CategoryValidation.GET.parse(categoryId)
+
+        const category = await prisma.category.findFirst({
+            where: { 
+                id: categoryId,
+            }
+        })
+
+        if (!category) {
+            throw new HTTPException(404, {
+                message: "Category not found"
+            })
+        }
 
         return toCategoryResponse(category)
     }

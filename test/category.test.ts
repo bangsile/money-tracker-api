@@ -51,3 +51,58 @@ describe("POST /api/categories", () => {
 		expect(body.data).toBeDefined();
 	});
 });
+
+describe("POST /api/categories", () => {
+	beforeEach(async () => {
+        await CategoryTest.delete()
+		await UserTest.create();
+        await CategoryTest.create()
+	});
+	afterEach(async () => {
+        await CategoryTest.delete()
+		await UserTest.delete();
+	});
+
+	it("should return 400 if categoryId has invalid format", async () => {
+		const response = await app.request("/api/categories/formattidak12byte", {
+			method: "GET",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 404 if category not found", async () => {
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f43", {
+			method: "GET",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(404);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should success get category if categoryId valid", async () => {
+
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f42", {
+			method: "GET",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+	});
+});

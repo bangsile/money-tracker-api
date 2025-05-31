@@ -10,15 +10,13 @@ export type CreateCategoryRequest = {
 
 export type CategoryResponse = {
     id: string,
-    username: string,
     name: string,
-    type: string
+    type: CategoryType
 }
 
 export function toCategoryResponse(category: Category): CategoryResponse {
     return ({
         id: category.id,
-        username: category.username,
         name: category.name,
         type:category.type
     })

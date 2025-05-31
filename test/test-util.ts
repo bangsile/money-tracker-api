@@ -34,4 +34,15 @@ export class CategoryTest {
             }
         })
     }
+
+    static async create() {
+        await prisma.category.create({
+            data: {
+                id: "66598f2d3f4b6e2a9c6e7f42",
+                username: "test",
+                name: "Transportasi",
+                type: "EXPENSE",
+            }
+        })
+    }
 }

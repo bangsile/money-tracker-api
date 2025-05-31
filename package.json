@@ -6,6 +6,7 @@
   "dependencies": {
     "@prisma/client": "^6.8.2",
     "hono": "^4.7.10",
+    "mongodb": "^6.16.0",
     "winston": "^3.17.0",
     "zod": "^3.25.34"
   },

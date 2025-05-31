@@ -17,3 +17,13 @@ categoryController.post("/api/categories", async (c) => {
         data: response
     })
 })
+
+categoryController.get("/api/categories/:categoryId", async (c) => {
+    const categoryId = c.req.param("categoryId");
+
+    const response = await CategoryService.get(categoryId);
+    
+    return c.json({
+        data: response
+    })
+})
