@@ -3,7 +3,6 @@ import { Category } from "../generated/prisma"
 export type CategoryType = "INCOME" | "EXPENSE"
 
 export type CreateCategoryRequest = {
-    username: string,
     name: string,
     type: CategoryType
 }
