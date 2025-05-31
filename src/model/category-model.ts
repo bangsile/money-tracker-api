@@ -7,6 +7,11 @@ export type CreateCategoryRequest = {
     type: CategoryType
 }
 
+export type UpdateCategoryRequest = {
+    name: string,
+    type: CategoryType
+}
+
 export type CategoryResponse = {
     id: string,
     name: string,

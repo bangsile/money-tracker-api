@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
 import { prisma } from "../application/database";
 import { User } from "../generated/prisma";
-import { CategoryResponse, CreateCategoryRequest, toCategoryResponse } from "../model/category-model";
+import { CategoryResponse, CreateCategoryRequest, toCategoryResponse, UpdateCategoryRequest } from "../model/category-model";
 import { CategoryValidation } from "../validation/category-validation";
 
 export class CategoryService {
@@ -34,6 +34,32 @@ export class CategoryService {
                 message: "Category not found"
             })
         }
+
+        return toCategoryResponse(category)
+    }
+
+    static async update(categoryId: string, request: UpdateCategoryRequest): Promise<CategoryResponse> {
+        categoryId = CategoryValidation.GET.parse(categoryId)
+        request = CategoryValidation.UPDATE.parse(request)
+
+        let category = await prisma.category.findFirst({
+            where: {
+                id: categoryId
+            }
+        })
+
+        if (!category) {
+            throw new HTTPException(404, {
+                message: "Category not found"
+            })
+        }
+
+        category = await prisma.category.update({
+            where: {
+                id: categoryId
+            },
+            data: request
+        })
 
         return toCategoryResponse(category)
     }

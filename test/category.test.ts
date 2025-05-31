@@ -106,3 +106,107 @@ describe("POST /api/categories", () => {
 		expect(body.data).toBeDefined();
 	});
 });
+
+describe("PATCH /api/categories", () => {
+	beforeEach(async () => {
+		await CategoryTest.delete()
+		await UserTest.create();
+		await CategoryTest.create()
+	});
+	afterEach(async () => {
+		await CategoryTest.delete()
+		await UserTest.delete();
+	});
+
+	it("should return 400 if categoryId has invalid format", async () => {
+		const response = await app.request("/api/categories/formattidak12byte", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "Freelance",
+				type: "INCOME"
+			})
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 404 if category not found", async () => {
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f43", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "Freelance",
+				type: "INCOME"
+			})
+		});
+
+		expect(response.status).toBe(404);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 400 if request invalid", async () => {
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f43", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "",
+				type: ""
+			})
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 400 if request (type) invalid", async () => {
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f43", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "Freelance",
+				type: "masukan"
+			})
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should success update category if categoryId and request valid", async () => {
+		const response = await app.request("/api/categories/66598f2d3f4b6e2a9c6e7f42", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+			body: JSON.stringify({
+				name: "Freelance",
+				type: "INCOME"
+			})
+		});
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+		expect(body.data.name).toBe("Freelance");
+		expect(body.data.type).toBe("INCOME");
+	});
+});
