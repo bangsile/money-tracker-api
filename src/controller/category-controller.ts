@@ -37,3 +37,12 @@ categoryController.patch("/api/categories/:categoryId", async (c) => {
         data: response
     })
 })
+
+categoryController.get("/api/categories", async (c) => {
+    const user = c.get("user")
+    const response = await CategoryService.list(user)
+
+    return c.json({
+        data: response
+    })
+})

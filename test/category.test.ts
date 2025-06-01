@@ -52,7 +52,7 @@ describe("POST /api/categories", () => {
 	});
 });
 
-describe("POST /api/categories", () => {
+describe("GET /api/categories", () => {
 	beforeEach(async () => {
         await CategoryTest.delete()
 		await UserTest.create();
@@ -210,3 +210,30 @@ describe("PATCH /api/categories", () => {
 		expect(body.data.type).toBe("INCOME");
 	});
 });
+
+describe("GET /api/categories", () => {
+	beforeEach(async () => {
+		await CategoryTest.delete()
+		await UserTest.create();
+		await CategoryTest.createMany(10)
+	});
+	afterEach(async () => {
+		await CategoryTest.delete()
+		await UserTest.delete();
+	});
+
+	it("should success list categories", async () => {
+		const response = await app.request("/api/categories", {
+			method: "GET",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+		expect(body.data.length).toBe(10);
+	});
+})

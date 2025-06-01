@@ -63,4 +63,15 @@ export class CategoryService {
 
         return toCategoryResponse(category)
     }
+
+    static async list(user: User): Promise<CategoryResponse[]> {
+
+        let categories = await prisma.category.findMany({
+            where: {
+                username: user.username
+            }
+        })
+
+        return categories.map(toCategoryResponse)
+    }
 }
