@@ -8,6 +8,8 @@ export class TransactionValidation {
 		}),
         amount: z.number().min(1),
         description: z.string().min(1).optional(),
-        date: z.string()
+        date: z.string().refine((val) => !isNaN(Date.parse(val)), {
+            message: "Invalid date format"
+        })
 	});
 }
