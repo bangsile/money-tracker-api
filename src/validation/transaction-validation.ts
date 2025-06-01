@@ -18,4 +18,12 @@ export class TransactionValidation {
 		.refine((val) => ObjectId.isValid(val), {
 			message: "Invalid ObjectId",
 		})
+
+    static readonly UPDATE: ZodType = z.object({
+        amount: z.number().min(1),
+        description: z.string().min(1).optional(),
+        date: z.string().refine((val) => !isNaN(Date.parse(val)), {
+            message: "Invalid date format"
+        })
+	});
 }

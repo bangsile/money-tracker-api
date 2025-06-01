@@ -118,3 +118,110 @@ describe("GET /api/transaction/{transactionId}", () => {
 		expect(body.data).toBeDefined();
 	});
 });
+
+describe("PATCH /api/transaction/{transactionId}", () => {
+	beforeEach(async () => {
+		await CategoryTest.delete();
+		await UserTest.create();
+		await CategoryTest.create();
+        await TransactionTest.create();
+	});
+	afterEach(async () => {
+		await TransactionTest.delete();
+		await CategoryTest.delete();
+		await UserTest.delete();
+	});
+
+	it("should reject if transactionId has invalid format", async () => {
+		const response = await app.request("/api/transactions/formatalas", {
+			method: "PATCH",
+			headers: {
+				Authorization: "test",
+			},
+            body: JSON.stringify({
+                categoryId: "66598f2d3f4b6e2a9c6e7f42",
+				username: "test",
+				amount: 20000,
+				description: "testa",
+				date: "2025-05-28"
+            })
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 404 if transaction not found", async () => {
+		const response = await app.request(
+			"/api/transactions/6659fc7d5f74f8a4b3c1d9ca",
+			{
+				method: "PATCH",
+				headers: {
+					Authorization: "test",
+				},
+                body: JSON.stringify({
+                    categoryId: "66598f2d3f4b6e2a9c6e7f42",
+                    username: "test",
+                    amount: 20000,
+                    description: "testa",
+                    date: "2025-05-28"
+                })
+			}
+		);
+
+		expect(response.status).toBe(404);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 400 if request not valid", async () => {
+		const response = await app.request(
+			"/api/transactions/6659fc7d5f74f8a4b3c1d9ab",
+			{
+				method: "PATCH",
+				headers: {
+					Authorization: "test",
+				},
+                body: JSON.stringify({
+                    categoryId: "",
+                    username: "",
+                    amount: "",
+                    description: "",
+                    date: ""
+                })
+			}
+		);
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should success if transactionId and request is valid", async () => {
+		const response = await app.request(
+			"/api/transactions/6659fc7d5f74f8a4b3c1d9ab",
+			{
+				method: "PATCH",
+				headers: {
+					Authorization: "test",
+				},
+                body: JSON.stringify({
+                    categoryId: "66598f2d3f4b6e2a9c6e7f42",
+                    username: "test",
+                    amount: 20000,
+                    description: "testa",
+                    date: "2025-05-28"
+                })
+			}
+		);
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+	});
+});

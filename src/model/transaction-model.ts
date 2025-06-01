@@ -16,6 +16,12 @@ export type TransactionResponse = {
     date: Date
 }
 
+export type UpdateTransactionRequest = {
+    amount: number,
+    description: string,
+    date: Date
+}
+
 export function toTransactionResponse(transaction: Transaction): TransactionResponse {
     return ({
         id: transaction.id,

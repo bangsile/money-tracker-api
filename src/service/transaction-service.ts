@@ -5,6 +5,7 @@ import {
 	CreateTransactionRequest,
 	toTransactionResponse,
 	TransactionResponse,
+    UpdateTransactionRequest,
 } from "../model/transaction-model";
 import { TransactionValidation } from "../validation/transaction-validation";
 
@@ -42,6 +43,32 @@ export class TransactionService {
                 message: "Transaction not found"
             })
         }
+
+        return toTransactionResponse(transaction)
+    }
+
+	static async update(transactionId: string, request: UpdateTransactionRequest): Promise<TransactionResponse> {
+        transactionId = TransactionValidation.GET.parse(transactionId)
+        request = TransactionValidation.UPDATE.parse(request)
+
+        let transaction = await prisma.transaction.findUnique({
+            where: {
+                id: transactionId
+            }
+        })
+
+        if (!transaction) {
+            throw new HTTPException(404, {
+                message: "Transaction not found"
+            })
+        }
+        request.date = new Date(request.date)
+        transaction = await prisma.transaction.update({
+            where: {
+                id: transactionId
+            },
+            data: request
+        })
 
         return toTransactionResponse(transaction)
     }
