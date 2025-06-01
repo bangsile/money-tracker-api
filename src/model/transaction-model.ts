@@ -1,4 +1,4 @@
-import { Transaction } from "../generated/prisma"
+import { Category, Transaction } from "../generated/prisma"
 
 export type CreateTransactionRequest = {
     categoryId: string,
@@ -10,10 +10,14 @@ export type CreateTransactionRequest = {
 export type TransactionResponse = {
     id: string,
     username: string,
-    categoryId: string,
     amount: number,
     description?: string | null,
     date: Date
+    category?: {
+        id: string,
+        name: string,
+        type: 'INCOME' | 'EXPENSE'
+    }
 }
 
 export type UpdateTransactionRequest = {
@@ -30,13 +34,19 @@ export type ListTransactionRequest = {
     size: number 
 }
 
-export function toTransactionResponse(transaction: Transaction): TransactionResponse {
-    return ({
+export function toTransactionResponse(transaction: Transaction & { category?: Category }): TransactionResponse {
+    return {
         id: transaction.id,
         username: transaction.username,
-        categoryId: transaction.categoryId,
         amount: transaction.amount,
         description: transaction.description,
-        date: transaction.date
-    })
+        date: transaction.date,
+        category: transaction.category
+            ? {
+                id: transaction.category.id,
+                name: transaction.category.name,
+                type: transaction.category.type
+            }
+            : undefined
+    }
 }

@@ -26,6 +26,9 @@ export class TransactionService {
 				description: request.description,
 				date: new Date(request.date),
 			},
+            include: {
+                category: true,
+            },
 		});
 
 		return toTransactionResponse(transaction);
@@ -37,7 +40,10 @@ export class TransactionService {
         const transaction = await prisma.transaction.findUnique({
             where: {
                 id: transactionId
-            }
+            },
+            include: {
+                category: true,
+            },
         })
 
         if (!transaction) {
@@ -69,7 +75,10 @@ export class TransactionService {
             where: {
                 id: transactionId
             },
-            data: request
+            data: request,
+            include: {
+                category: true,
+            },
         })
 
         return toTransactionResponse(transaction)
