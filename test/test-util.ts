@@ -65,4 +65,17 @@ export class TransactionTest {
 			},
 		});
 	}
+
+	static async create() {
+		await prisma.transaction.create({
+			data: {
+				id: "6659fc7d5f74f8a4b3c1d9ab",
+				username: "test",
+				categoryId: "66598f2d3f4b6e2a9c6e7f42",
+				amount: 120000,
+				description: "test",
+				date: new Date("2025-06-01"),
+			},
+		});
+	}
 }

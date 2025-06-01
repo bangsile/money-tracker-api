@@ -12,4 +12,10 @@ export class TransactionValidation {
             message: "Invalid date format"
         })
 	});
+
+    static readonly GET: ZodType = z
+		.string()
+		.refine((val) => ObjectId.isValid(val), {
+			message: "Invalid ObjectId",
+		})
 }

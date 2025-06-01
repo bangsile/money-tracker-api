@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import { prisma } from "../application/database";
 import { User } from "../generated/prisma";
 import {
@@ -26,4 +27,22 @@ export class TransactionService {
 
 		return toTransactionResponse(transaction);
 	}
+
+	static async get(transactionId: string): Promise<TransactionResponse> {
+        transactionId = TransactionValidation.GET.parse(transactionId)
+
+        const transaction = await prisma.transaction.findUnique({
+            where: {
+                id: transactionId
+            }
+        })
+
+        if (!transaction) {
+            throw new HTTPException(404, {
+                message: "Transaction not found"
+            })
+        }
+
+        return toTransactionResponse(transaction)
+    }
 }

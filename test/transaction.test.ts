@@ -56,3 +56,65 @@ describe("POST /api/categories", () => {
 		expect(body.data).toBeDefined();
 	});
 });
+
+describe("GET /api/transaction/{transactionId}", () => {
+	beforeEach(async () => {
+		await CategoryTest.delete();
+		await UserTest.create();
+		await CategoryTest.create();
+        await TransactionTest.create();
+	});
+	afterEach(async () => {
+		await TransactionTest.delete();
+		await CategoryTest.delete();
+		await UserTest.delete();
+	});
+
+	it("should reject if transactionId has invalid format", async () => {
+		const response = await app.request("/api/transactions/formatalas", {
+			method: "GET",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 404 if transaction not found", async () => {
+		const response = await app.request(
+			"/api/transactions/6659fc7d5f74f8a4b3c1d9ca",
+			{
+				method: "GET",
+				headers: {
+					Authorization: "test",
+				},
+			}
+		);
+
+		expect(response.status).toBe(404);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should success if transactionId is valid", async () => {
+		const response = await app.request(
+			"/api/transactions/6659fc7d5f74f8a4b3c1d9ab",
+			{
+				method: "GET",
+				headers: {
+					Authorization: "test",
+				},
+			}
+		);
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+	});
+});

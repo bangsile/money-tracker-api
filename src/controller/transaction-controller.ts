@@ -17,3 +17,12 @@ transactionController.post("/api/transactions", async (c) => {
         data: response
     })
 })
+
+transactionController.get("/api/transactions/:transactionId", async (c) => {
+    const transationId = c.req.param("transactionId")
+    const response = await TransactionService.get(transationId)
+
+    return c.json({
+        data: response
+    })
+})
