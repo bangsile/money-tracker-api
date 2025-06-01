@@ -26,4 +26,16 @@ export class TransactionValidation {
             message: "Invalid date format"
         })
 	});
+
+    static readonly LIST: ZodType = z.object({
+        type: z.string().min(1).optional(),
+        start: z.string().refine((val) => !isNaN(Date.parse(val)), {
+            message: "Invalid date format"
+            }).optional(),
+        end: z.string().refine((val) => !isNaN(Date.parse(val)), {
+            message: "Invalid date format"
+            }).optional(),
+        page: z.number().min(1).positive(),
+        size: z.number().min(1).max(100).positive()
+    })
 }

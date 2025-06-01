@@ -3,11 +3,13 @@ import { prisma } from "../application/database";
 import { User } from "../generated/prisma";
 import {
 	CreateTransactionRequest,
+	ListTransactionRequest,
 	toTransactionResponse,
 	TransactionResponse,
     UpdateTransactionRequest,
 } from "../model/transaction-model";
 import { TransactionValidation } from "../validation/transaction-validation";
+import { Pageable } from "../model/page-model";
 
 export class TransactionService {
 	static async create(
@@ -95,5 +97,63 @@ export class TransactionService {
         })
 
         return true
+    }
+
+    static async list(user: User, request: ListTransactionRequest): Promise<Pageable<TransactionResponse>> {
+        request = TransactionValidation.LIST.parse(request);
+
+        const filters: any = [];
+
+        if (request.type) {
+        filters.push({
+            category: {
+            type: request.type,
+            },
+        });
+        }
+
+        if (request.start || request.end) {
+        const dateFilter: any = {};
+        if (request.start) {
+            dateFilter.gte = new Date(request.start);
+        }
+        if (request.end) {
+            dateFilter.lte = new Date(request.end);
+        }
+
+        filters.push({
+            date: dateFilter,
+        });
+        }
+
+        const skip = (request.page - 1) * request.size;
+
+        const transactions = await prisma.transaction.findMany({
+        where: {
+            username: user.username,
+            AND: filters,
+        },
+        include: {
+            category: true,
+        },
+        take: request.size,
+        skip: skip,
+        });
+
+        const total = await prisma.transaction.count({
+            where: {
+                username: user.username,
+                AND: filters
+            }
+        })
+
+        return {
+            data: transactions.map(contact => toTransactionResponse(contact)),
+            paging: {
+                current_page: request.page,
+                size: request.size,
+                total_page: Math.ceil(total / request.size)
+            }
+        }
     }
 }

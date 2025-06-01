@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { ApplicationVariables } from "../model/app-model";
 import { authMiddleware } from "../middleware/auth-middleware";
-import { CreateTransactionRequest, UpdateTransactionRequest } from "../model/transaction-model";
+import { CreateTransactionRequest, ListTransactionRequest, UpdateTransactionRequest } from "../model/transaction-model";
 import { TransactionService } from "../service/transaction-service";
+import { User } from "../generated/prisma";
 
 export const transactionController = new Hono<{ Variables: ApplicationVariables }>();
 
@@ -44,4 +45,18 @@ transactionController.delete("/api/transactions/:transactionId", async (c) => {
     return c.json({
         data: response
     })
+})
+
+transactionController.get('/api/transactions', async (c) => {
+    const user = c.get('user') as User
+
+    const request: ListTransactionRequest = {
+        type: c.req.query("type"),
+        start:  c.req.query("start"),
+        end: c.req.query("end"),
+        page: c.req.query("page") ? Number(c.req.query("page")) : 1,
+        size: c.req.query("size") ? Number(c.req.query("size")) : 10,
+    }
+    const response = await TransactionService.list(user, request)
+    return c.json(response)
 })

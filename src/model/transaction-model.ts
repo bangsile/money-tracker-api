@@ -22,6 +22,14 @@ export type UpdateTransactionRequest = {
     date: Date
 }
 
+export type ListTransactionRequest = {
+    type?: string
+    start?: string
+    end?: string
+    page: number 
+    size: number 
+}
+
 export function toTransactionResponse(transaction: Transaction): TransactionResponse {
     return ({
         id: transaction.id,
