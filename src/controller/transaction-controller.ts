@@ -36,3 +36,12 @@ transactionController.patch("/api/transactions/:transactionId", async (c) => {
         data: response
     })
 })
+
+transactionController.delete("/api/transactions/:transactionId", async (c) => {
+    const transationId =  c.req.param("transactionId")
+    const response = await TransactionService.delete(transationId)
+
+    return c.json({
+        data: response
+    })
+})

@@ -225,3 +225,61 @@ describe("PATCH /api/transaction/{transactionId}", () => {
 		expect(body.data).toBeDefined();
 	});
 });
+
+describe("DELETE /api/transactions/{transactionId}", () => {
+	beforeEach(async () => {
+        await CategoryTest.delete();
+		await UserTest.create();
+        await CategoryTest.create();
+		await TransactionTest.create();
+	});
+	afterEach(async () => {
+		await TransactionTest.delete();
+        await CategoryTest.delete();
+		await UserTest.delete();
+	});
+
+	it("should return 400 if transactionId has invalid format", async () => {
+		const response = await app.request("/api/transactions/formattidak12byte", {
+			method: "DELETE",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(400);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should return 404 if transaction not found", async () => {
+		const response = await app.request("/api/transactions/66598f2d3f4b6e2a9c6e7f43", {
+			method: "DELETE",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(404);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.errors).toBeDefined();
+	});
+
+	it("should success delete category if transactionId valid", async () => {
+
+		const response = await app.request("/api/transactions/6659fc7d5f74f8a4b3c1d9ab", {
+			method: "DELETE",
+			headers: {
+				Authorization: "test",
+			},
+		});
+
+		expect(response.status).toBe(200);
+		const body = await response.json();
+		logger.debug(body);
+		expect(body.data).toBeDefined();
+		expect(body.data).toBe(true);
+	});
+});

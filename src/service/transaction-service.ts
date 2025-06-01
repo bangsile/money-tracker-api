@@ -72,4 +72,28 @@ export class TransactionService {
 
         return toTransactionResponse(transaction)
     }
+
+    static async delete(transactionId: string): Promise<Boolean> {
+        transactionId = TransactionValidation.GET.parse(transactionId)
+        
+        let transaction = await prisma.transaction.findUnique({
+            where: {
+                id: transactionId
+            }
+        })
+
+        if (!transaction) {
+            throw new HTTPException(404, {
+                message: "Transaction not found"
+            })
+        }
+
+        transaction = await prisma.transaction.delete({
+            where: {
+                id: transactionId
+            },
+        })
+
+        return true
+    }
 }
