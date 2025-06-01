@@ -56,3 +56,13 @@ export class CategoryTest {
 		}
 	}
 }
+
+export class TransactionTest {
+	static async delete() {
+		await prisma.transaction.deleteMany({
+			where: {
+				username: "test",
+			},
+		});
+	}
+}
