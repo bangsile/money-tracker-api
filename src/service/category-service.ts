@@ -74,4 +74,28 @@ export class CategoryService {
 
         return categories.map(toCategoryResponse)
     }
+
+    static async delete(categoryId: string): Promise<Boolean> {
+        categoryId = CategoryValidation.GET.parse(categoryId)
+
+        const category = await prisma.category.findFirst({
+            where: {
+                id: categoryId
+            }
+        })
+
+        if (!category) {
+            throw new HTTPException(404, {
+                message: "Category not found"
+            })
+        }
+
+        await prisma.category.delete({
+            where: {
+                id: categoryId
+            }
+        })
+
+        return true
+    }
 }

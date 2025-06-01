@@ -46,3 +46,12 @@ categoryController.get("/api/categories", async (c) => {
         data: response
     })
 })
+
+categoryController.delete("/api/categories/:categoryId", async (c) => {
+    const categoryId = c.req.param("categoryId")
+    const response = await CategoryService.delete(categoryId)
+
+    return c.json({
+        data: response
+    })
+})
